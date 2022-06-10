@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import { Day, IDay } from "./models/Day";
 import DayPage from "./pages/DayPage";
+import WeekPage from "./pages/WeekPage";
 
 export default function App() {
   const [days, setDays] = useState<IDay[]>([]);
   const [currentDay, setCurrentDay] = useState<IDay>();
   const [displayDay, setDisplayDay] = useState<boolean>(true);
+  const [tracking, setTracking] = useState<boolean>(false);
 
   useEffect(() => {
     getCurrentDay();
@@ -18,7 +20,7 @@ export default function App() {
     setCurrentDay(day);
   }
 
-  function toggleDisplay() {
+  function toggleDisplayName() {
     setDisplayDay((prevDisplayDay) => !prevDisplayDay);
   }
 
@@ -26,11 +28,25 @@ export default function App() {
     console.log("flip day " + direction);
   }
 
+  function toggleTracking() {
+    setTracking((prevTracking) => !prevTracking);
+    console.log(tracking);
+  }
+
   return (
     <>
-      <Header displayDay={displayDay} handleClick={toggleDisplay} />
+      <Header displayDay={displayDay} handleClick={toggleDisplayName} />
       <main className="mt-5">
-        {displayDay && <DayPage day={currentDay} flipDay={flipDay} />}
+        {displayDay ? (
+          <DayPage
+            day={currentDay}
+            flipDay={flipDay}
+            tracking={tracking}
+            toggleTracking={toggleTracking}
+          />
+        ) : (
+          <WeekPage />
+        )}
       </main>
     </>
   );

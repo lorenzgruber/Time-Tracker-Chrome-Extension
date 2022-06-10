@@ -8,13 +8,8 @@ export default function Clock({ className }: IProps) {
   const [time, setTime] = useState<string>(getCurrentTimeString());
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(getCurrentTimeString());
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
+    const interval = setInterval(() => setTime(getCurrentTimeString()), 1000);
+    return () => clearInterval(interval);
   }, []);
 
   function getCurrentTimeString() {

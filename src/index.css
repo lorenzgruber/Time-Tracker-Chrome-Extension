@@ -7,4 +7,13 @@ body {
   width: 400px;
   height: 500px;
   font-family: 'Inter', sans-serif;
+  @apply text-slate-800 select-none;
+}
+
+.clickable {
+  @apply cursor-pointer transition-transform;
+}
+
+.clickable:active {
+  @apply scale-90;
 }
