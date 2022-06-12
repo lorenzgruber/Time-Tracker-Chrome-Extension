@@ -148,12 +148,15 @@ export default function DayPage({
         {isToday && (
           <TrackingButton tracking={tracking} toggleTracking={toggleTracking} />
         )}
-        <h3 className="mt-5 text-2xl font-thin tracking-wider">
-          {day &&
-            day.timeframes.length !== 0 &&
-            minutesToHoursAndMinutes(getTotalTimeDay(day))}
-        </h3>
       </div>
+      <h3
+        className="flex justify-center w-full items-center mt-auto text-2xl font-bold tracking-wider bottom-0 absolute"
+        style={{ marginBottom: "5rem" }}
+      >
+        {day &&
+          day.timeframes.length !== 0 &&
+          minutesToHoursAndMinutes(getTotalTimeDay(day))}
+      </h3>
       <div className="absolute w-full bottom-16">{timeframeElements}</div>
       <div className="absolute w-full bottom-8 h-9">
         <div

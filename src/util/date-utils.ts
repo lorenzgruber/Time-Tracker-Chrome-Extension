@@ -1,4 +1,5 @@
-import { IDay } from "../models/Day";
+import { IDays } from "../App";
+import { Day, IDay } from "../models/Day";
 
 export function getWeekDay(date: Date): string {
   const weekdays = [
@@ -66,4 +67,19 @@ export function hoursAndMinutesToMinutes(
   const hours = Number.parseInt(hoursAndMinutes.split(seperator)[0]);
   const minutes = Number.parseInt(hoursAndMinutes.split(seperator)[1]);
   return hours * 60 + minutes;
+}
+
+export function parseDaysFromLocalStorage(
+  daysString: string | null
+): IDays | null {
+  if (!daysString) {
+    return null;
+  }
+  const days: IDays = JSON.parse(daysString);
+  let parsedDays: IDays = {};
+  Object.entries(days).map(([key, value]) => {
+    parsedDays[key] = new Day(new Date(value.date));
+    parsedDays[key].timeframes = value.timeframes;
+  });
+  return parsedDays;
 }

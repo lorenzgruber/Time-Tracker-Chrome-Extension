@@ -4,15 +4,21 @@ import { Day, IDay } from "./models/Day";
 import { Timeframe } from "./models/Timeframe";
 import DayPage from "./pages/DayPage";
 import WeekPage from "./pages/WeekPage";
-import { getDateString, getTotalMinutes } from "./util/date-utils";
+import {
+  getDateString,
+  getTotalMinutes,
+  parseDaysFromLocalStorage,
+} from "./util/date-utils";
 
-interface IDays {
+export interface IDays {
   [date: string]: IDay;
 }
 
 export default function App() {
-  const [days, setDays] = useState<IDays>({});
-  const [currentDay, setCurrentDay] = useState<IDay>(new Day(new Date()));
+  const [days, setDays] = useState<IDays>(
+    parseDaysFromLocalStorage(localStorage.getItem("days")) || {}
+  );
+  const [currentDay, setCurrentDay] = useState<IDay>(getCurrentDay());
   const [isToday, setIsToday] = useState<boolean>(true);
   const [displayDay, setDisplayDay] = useState<boolean>(true);
   const [tracking, setTracking] = useState<boolean>(false);
@@ -20,9 +26,9 @@ export default function App() {
   //   JSON.parse(localStorage.getItem("tracking") || "null") || false
   // );
 
-  // useEffect(() => {
-  //   localStorage.setItem("tracking", JSON.stringify(tracking));
-  // }, [tracking]);
+  useEffect(() => {
+    localStorage.setItem("tracking", JSON.stringify(tracking));
+  }, [tracking]);
 
   useEffect(() => {
     if (currentDay.timeframes.length > 0) {
@@ -42,8 +48,19 @@ export default function App() {
       });
     }
     setIsToday(currentDay.date.getDate() === new Date().getDate());
-    //console.log(days);
   }, [currentDay]);
+
+  useEffect(() => {
+    localStorage.setItem("days", JSON.stringify(days));
+  }, [days]);
+
+  function getCurrentDay(): IDay {
+    const date = new Date();
+    if (getDateString(date) in days) {
+      return days[getDateString(date)];
+    }
+    return new Day(date);
+  }
 
   function toggleDisplayName() {
     setDisplayDay((prevDisplayDay) => !prevDisplayDay);
