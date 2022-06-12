@@ -23,13 +23,6 @@ export default function TimeIndicator({ rangeStart, rangeEnd }: IProps) {
   }
 
   function calculatePosition(): number {
-    console.log(
-      map(progress, rangeStart, rangeEnd, 0, 1),
-      progress,
-      rangeStart,
-      rangeEnd
-    );
-
     return map(progress, rangeStart, rangeEnd, 0, 1) * 100;
   }
 
