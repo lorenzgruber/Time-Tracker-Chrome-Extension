@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { map } from "../util/math-utils";
+import { map } from "../../util/math-utils";
 
 interface IProps {
   rangeStart: number;
@@ -10,16 +10,14 @@ export default function TimeIndicator({ rangeStart, rangeEnd }: IProps) {
   const [progress, setProgress] = useState<number>(getProgress());
 
   useEffect(() => {
-    const interval = setInterval(
-      () => setProgress(getProgress()),
-      15 * 60 * 1000
-    );
+    const interval = setInterval(() => setProgress(getProgress()), 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
   function getProgress(): number {
     const now = new Date();
     return (now.getHours() * 60 + now.getMinutes()) / 60;
+    //return 8;
   }
 
   function calculatePosition(): number {
@@ -27,13 +25,19 @@ export default function TimeIndicator({ rangeStart, rangeEnd }: IProps) {
   }
 
   return (
-    <div className="relative w-full h-full z-10">
+    <div className="relative w-full h-full z-10 pointer-events-none">
       <div
-        className=" absolute bottom-0 outline outline-1 outline-slate-700 w-0 h-full"
+        className=" absolute bottom-0 bg-blue-400 h-full rounded-full"
         style={{
           left: `${calculatePosition()}%`,
+          width: "2px",
         }}
-      ></div>
+      >
+        <div
+          className="rounded-full bg-blue-400 absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2"
+          style={{ width: "6px", height: "6px" }}
+        ></div>
+      </div>
     </div>
   );
 }

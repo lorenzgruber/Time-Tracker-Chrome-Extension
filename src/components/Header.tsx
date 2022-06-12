@@ -12,7 +12,7 @@ export default function Header({ displayDay, handleClick }: IProps) {
       >
         {displayDay ? "Day" : "Week"}
       </h3>
-      <hr></hr>
+      <hr className="border-slate-300"></hr>
     </header>
   );
 }

@@ -1,4 +1,4 @@
-import Clock from "../components/Clock";
+import Clock from "../components/time/Clock";
 import { IDay } from "../models/Day";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -6,8 +6,20 @@ import {
   faArrowRightLong,
 } from "@fortawesome/free-solid-svg-icons";
 import TrackingButton from "../components/TrackingButton";
-import TimeIndicator from "../components/TimeIndicator";
-import { getDateString, getWeekDay } from "../util/date-utils";
+import {
+  getDateString,
+  getTotalMinutes,
+  getTotalTimeDay,
+  getWeekDay,
+  minutesToHoursAndMinutes,
+} from "../util/date-utils";
+import { useState } from "react";
+import TimeframeBar from "../components/time/TimeframeBar";
+import Timeline from "../components/time/Timeline";
+import TimeIndicator from "../components/time/TimeIndicator";
+import TimeframeDialog, {
+  ITimeframeDialogOptions,
+} from "../components/dialog/TimeframeDialog";
 
 interface IProps {
   day?: IDay;
@@ -24,12 +36,46 @@ export default function DayPage({
   tracking,
   toggleTracking,
 }: IProps) {
+  const [range, setRange] = useState({ start: 6, end: 19 });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogOptions, setDialogOptions] = useState<ITimeframeDialogOptions>(
+    {}
+  );
+
+  const timeframeElements = day?.timeframes.map((timeframe) => {
+    return (
+      <TimeframeBar
+        key={JSON.stringify(timeframe)}
+        timeframe={timeframe}
+        rangeStart={range.start}
+        rangeEnd={range.end}
+        handleClick={() =>
+          openDialog({
+            edit: true,
+            start: minutesToHoursAndMinutes(timeframe.start, ":"),
+            end: minutesToHoursAndMinutes(timeframe.end, ":"),
+          })
+        }
+      />
+    );
+  });
+
+  function openDialog(options: ITimeframeDialogOptions) {
+    setDialogOptions(options);
+    setDialogOpen(true);
+  }
+
+  function submitDialog(startDate?: Date, endDate?: Date) {
+    console.log(startDate, endDate);
+    setDialogOpen(false);
+  }
+
   return (
     <div>
       <div className="flex flex-col justify-center items-center">
         <div
-          className={`w-2 h-2 rounded-full mb-2 ${
-            isToday ? "bg-blue-300" : "bg-transparent"
+          className={`w-2 h-2 rounded-full mb-3 ${
+            isToday ? "bg-blue-400" : "bg-transparent"
           }`}
         ></div>
         <h3 className="-my-2 font-thin text-lg tracking-wider">
@@ -54,15 +100,35 @@ export default function DayPage({
         </div>
         {isToday && <Clock className="my-0 font-thin text-2xl" />}
       </div>
-      {isToday && (
-        <div className="flex justify-center items-center mt-5">
+      <div className="flex flex-col justify-center items-center mt-5">
+        {isToday && (
           <TrackingButton tracking={tracking} toggleTracking={toggleTracking} />
-        </div>
-      )}
-      {isToday && (
-        <div className="absolute w-full h-2/6 bottom-0">
-          <TimeIndicator rangeStart={0} rangeEnd={24} />
-        </div>
+        )}
+        <h3 className="mt-5 text-2xl font-thin tracking-wider">
+          {day &&
+            day.timeframes.length !== 0 &&
+            minutesToHoursAndMinutes(getTotalTimeDay(day))}
+        </h3>
+      </div>
+      <div className="absolute w-full bottom-16">{timeframeElements}</div>
+      <div className="absolute w-full bottom-8 h-9">
+        <div
+          className="w-full h-full bg-transparent hover:bg-slate-100 cursor-pointer absolute bottom-0 transition-colors"
+          onClick={() => openDialog({})}
+        ></div>
+        <Timeline rangeStart={range.start} rangeEnd={range.end} />
+        {isToday && (
+          <TimeIndicator rangeStart={range.start} rangeEnd={range.end} />
+        )}
+      </div>
+      {dialogOpen && (
+        <TimeframeDialog
+          open={dialogOpen}
+          onClose={submitDialog}
+          edit={dialogOptions.edit}
+          start={dialogOptions.start}
+          end={dialogOptions.end}
+        />
       )}
     </div>
   );

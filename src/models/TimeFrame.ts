@@ -1,13 +1,13 @@
-export interface ITimeFrame {
-  start: Date;
-  end: Date;
+export interface ITimeframe {
+  start: number;
+  end: number;
 }
 
-export class TimeFrame implements ITimeFrame {
-  start: Date;
-  end: Date;
+export class Timeframe implements ITimeframe {
+  start: number;
+  end: number;
 
-  constructor(start: Date, end: Date) {
+  constructor(start: number, end: number) {
     this.start = start;
     this.end = end;
   }
