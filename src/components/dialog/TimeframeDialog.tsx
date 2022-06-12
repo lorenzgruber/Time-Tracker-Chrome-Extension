@@ -69,7 +69,7 @@ export default function Dialog({
   }
 
   function cancel() {
-    onClose();
+    onClose({});
   }
 
   function remove() {

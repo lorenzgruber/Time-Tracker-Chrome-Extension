@@ -6,8 +6,12 @@ import DayPage from "./pages/DayPage";
 import WeekPage from "./pages/WeekPage";
 import { getDateString, getTotalMinutes } from "./util/date-utils";
 
+interface IDays {
+  [date: string]: IDay;
+}
+
 export default function App() {
-  const [days, setDays] = useState<{ [date: string]: IDay }>({});
+  const [days, setDays] = useState<IDays>({});
   const [currentDay, setCurrentDay] = useState<IDay>(new Day(new Date()));
   const [isToday, setIsToday] = useState<boolean>(true);
   const [displayDay, setDisplayDay] = useState<boolean>(true);
@@ -21,31 +25,24 @@ export default function App() {
   // }, [tracking]);
 
   useEffect(() => {
-    setCurrentDay((prevCurrentDay) => ({
-      ...prevCurrentDay,
-      timeframes: [
-        new Timeframe(
-          getTotalMinutes(new Date(Date.parse("12, Jun 2022 08:00:00"))),
-          getTotalMinutes(new Date(Date.parse("12, Jun 2022 12:00:00")))
-        ),
-        new Timeframe(
-          getTotalMinutes(new Date(Date.parse("12, Jun 2022 12:45:00"))),
-          getTotalMinutes(new Date(Date.parse("12, Jun 2022 17:00:00")))
-        ),
-      ],
-    }));
-  }, []);
-
-  console.log();
-
-  useEffect(() => {
     if (currentDay.timeframes.length > 0) {
       setDays((prevDays) => ({
         ...prevDays,
         [getDateString(currentDay.date)]: currentDay,
       }));
+    } else {
+      setDays((prevDays) => {
+        const newDays: IDays = {};
+        Object.entries(prevDays).map(([key, value]) => {
+          if (key !== getDateString(currentDay.date)) {
+            newDays[key] = value;
+          }
+        });
+        return newDays;
+      });
     }
     setIsToday(currentDay.date.getDate() === new Date().getDate());
+    //console.log(days);
   }, [currentDay]);
 
   function toggleDisplayName() {
