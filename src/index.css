@@ -11,7 +11,7 @@ body {
 }
 
 .clickable {
-  @apply cursor-pointer transition-transform;
+  @apply cursor-pointer transition-transform hover:scale-110;
 }
 
 .clickable:active {

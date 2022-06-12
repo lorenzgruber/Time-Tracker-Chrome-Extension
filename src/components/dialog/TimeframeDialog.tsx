@@ -11,15 +11,31 @@ interface IProps {
   edit?: boolean;
   start?: string;
   end?: string;
+  id?: string;
 }
 
 export interface ITimeframeDialogOptions {
   start?: string;
   end?: string;
   edit?: boolean;
+  id?: string;
 }
 
-export default function Dialog({ open, onClose, edit, start, end }: IProps) {
+export interface ITimeframeDialogSubmitOptions {
+  start?: string;
+  end?: string;
+  delete?: boolean;
+  id?: string;
+}
+
+export default function Dialog({
+  open,
+  onClose,
+  edit,
+  start,
+  end,
+  id,
+}: IProps) {
   const [formData, setFormDate] = useState<{
     startTime: string;
     endTime: string;
@@ -30,8 +46,6 @@ export default function Dialog({ open, onClose, edit, start, end }: IProps) {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
-    console.log(event.target.value);
-
     if (errorMessage) {
       setErrorMessage("");
     }
@@ -51,18 +65,15 @@ export default function Dialog({ open, onClose, edit, start, end }: IProps) {
       setErrorMessage("Start must be bevore end!");
       return;
     }
-    clearForm();
-    onClose(formData.startTime, formData.endTime);
+    onClose({ start: formData.startTime, end: formData.endTime, id });
   }
 
   function cancel() {
-    clearForm();
     onClose();
   }
 
-  function clearForm() {
-    setFormDate({ startTime: "", endTime: "" });
-    setErrorMessage("");
+  function remove() {
+    onClose({ delete: true, id });
   }
 
   return (
@@ -77,6 +88,7 @@ export default function Dialog({ open, onClose, edit, start, end }: IProps) {
               {edit && (
                 <button className="absolute right-3">
                   <FontAwesomeIcon
+                    onClick={remove}
                     icon={faTrash}
                     className="text-slate-800 hover:scale-110 transition-transform"
                   />

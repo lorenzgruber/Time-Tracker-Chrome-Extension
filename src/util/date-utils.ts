@@ -58,3 +58,12 @@ export function minutesToHoursAndMinutes(
   }
   return `${hours}h ${minutes}m`;
 }
+
+export function hoursAndMinutesToMinutes(
+  hoursAndMinutes: string,
+  seperator: string
+): number {
+  const hours = Number.parseInt(hoursAndMinutes.split(seperator)[0]);
+  const minutes = Number.parseInt(hoursAndMinutes.split(seperator)[1]);
+  return hours * 60 + minutes;
+}

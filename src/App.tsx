@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import { Day, IDay } from "./models/Day";
+import { Timeframe } from "./models/Timeframe";
 import DayPage from "./pages/DayPage";
 import WeekPage from "./pages/WeekPage";
 import { getDateString, getTotalMinutes } from "./util/date-utils";
@@ -23,17 +24,19 @@ export default function App() {
     setCurrentDay((prevCurrentDay) => ({
       ...prevCurrentDay,
       timeframes: [
-        {
-          start: getTotalMinutes(new Date(Date.parse("12, Jun 2022 08:00:00"))),
-          end: getTotalMinutes(new Date(Date.parse("12, Jun 2022 12:00:00"))),
-        },
-        {
-          start: getTotalMinutes(new Date(Date.parse("12, Jun 2022 12:45:00"))),
-          end: getTotalMinutes(new Date(Date.parse("12, Jun 2022 16:00:00"))),
-        },
+        new Timeframe(
+          getTotalMinutes(new Date(Date.parse("12, Jun 2022 08:00:00"))),
+          getTotalMinutes(new Date(Date.parse("12, Jun 2022 12:00:00")))
+        ),
+        new Timeframe(
+          getTotalMinutes(new Date(Date.parse("12, Jun 2022 12:45:00"))),
+          getTotalMinutes(new Date(Date.parse("12, Jun 2022 17:00:00")))
+        ),
       ],
     }));
   }, []);
+
+  console.log();
 
   useEffect(() => {
     if (currentDay.timeframes.length > 0) {
@@ -64,6 +67,10 @@ export default function App() {
     setTracking((prevTracking) => !prevTracking);
   }
 
+  function updateTimeframes(day: IDay) {
+    setCurrentDay(day);
+  }
+
   return (
     <>
       <Header displayDay={displayDay} handleClick={toggleDisplayName} />
@@ -75,6 +82,7 @@ export default function App() {
             flipDay={flipDay}
             tracking={tracking}
             toggleTracking={toggleTracking}
+            updateTimeframes={updateTimeframes}
           />
         ) : (
           <WeekPage />

@@ -8,9 +8,9 @@ import {
 import TrackingButton from "../components/TrackingButton";
 import {
   getDateString,
-  getTotalMinutes,
   getTotalTimeDay,
   getWeekDay,
+  hoursAndMinutesToMinutes,
   minutesToHoursAndMinutes,
 } from "../util/date-utils";
 import { useState } from "react";
@@ -19,14 +19,17 @@ import Timeline from "../components/time/Timeline";
 import TimeIndicator from "../components/time/TimeIndicator";
 import TimeframeDialog, {
   ITimeframeDialogOptions,
+  ITimeframeDialogSubmitOptions,
 } from "../components/dialog/TimeframeDialog";
+import { Timeframe } from "../models/Timeframe";
 
 interface IProps {
-  day?: IDay;
+  day: IDay;
   isToday: boolean;
   flipDay: Function;
   tracking: boolean;
   toggleTracking: Function;
+  updateTimeframes: Function;
 }
 
 export default function DayPage({
@@ -35,6 +38,7 @@ export default function DayPage({
   flipDay,
   tracking,
   toggleTracking,
+  updateTimeframes,
 }: IProps) {
   const [range, setRange] = useState({ start: 6, end: 19 });
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -45,7 +49,7 @@ export default function DayPage({
   const timeframeElements = day?.timeframes.map((timeframe) => {
     return (
       <TimeframeBar
-        key={JSON.stringify(timeframe)}
+        key={timeframe.id}
         timeframe={timeframe}
         rangeStart={range.start}
         rangeEnd={range.end}
@@ -54,6 +58,7 @@ export default function DayPage({
             edit: true,
             start: minutesToHoursAndMinutes(timeframe.start, ":"),
             end: minutesToHoursAndMinutes(timeframe.end, ":"),
+            id: timeframe.id,
           })
         }
       />
@@ -65,9 +70,48 @@ export default function DayPage({
     setDialogOpen(true);
   }
 
-  function submitDialog(startDate?: Date, endDate?: Date) {
-    console.log(startDate, endDate);
+  function submitDialog(options: ITimeframeDialogSubmitOptions) {
     setDialogOpen(false);
+
+    let newDay: any;
+
+    if (options.delete) {
+      newDay = {
+        ...day,
+        timeframes:
+          day?.timeframes.filter((timeframe) => timeframe.id !== options.id) ||
+          [],
+      };
+    } else if (options.start && options.end) {
+      if (options.id) {
+        newDay = {
+          ...day,
+          timeframes: day.timeframes.map((timeframe) => {
+            return timeframe.id === options.id
+              ? new Timeframe(
+                  hoursAndMinutesToMinutes(options.start || "", ":"),
+                  hoursAndMinutesToMinutes(options.end || "", ":")
+                )
+              : timeframe;
+          }),
+        };
+      } else {
+        newDay = {
+          ...day,
+          timeframes: [
+            ...day.timeframes,
+            new Timeframe(
+              hoursAndMinutesToMinutes(options.start, ":"),
+              hoursAndMinutesToMinutes(options.end, ":")
+            ),
+          ],
+        };
+      }
+    }
+
+    if (newDay) {
+      updateTimeframes(newDay);
+    }
   }
 
   return (
@@ -128,6 +172,7 @@ export default function DayPage({
           edit={dialogOptions.edit}
           start={dialogOptions.start}
           end={dialogOptions.end}
+          id={dialogOptions.id}
         />
       )}
     </div>
