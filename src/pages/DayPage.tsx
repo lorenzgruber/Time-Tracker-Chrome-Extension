@@ -151,7 +151,7 @@ export default function DayPage({
       </div>
       <h3
         className="flex justify-center w-full items-center mt-auto text-2xl font-bold tracking-wider bottom-0 absolute"
-        style={{ marginBottom: "5rem" }}
+        style={{ marginBottom: "5.5rem" }}
       >
         {day &&
           day.timeframes.length !== 0 &&

@@ -1,6 +1,9 @@
-import { MouseEventHandler } from "react";
+import { time } from "console";
+import { MouseEventHandler, useState } from "react";
 import { ITimeframe } from "../../models/Timeframe";
+import { minutesToHoursAndMinutes } from "../../util/date-utils";
 import { map } from "../../util/math-utils";
+import Popup from "../Popup";
 
 interface IProps {
   timeframe: ITimeframe;
@@ -8,13 +11,14 @@ interface IProps {
   rangeEnd: number;
   handleClick: MouseEventHandler;
 }
-
 export default function TimeframeBar({
   timeframe,
   rangeStart,
   rangeEnd,
   handleClick,
 }: IProps) {
+  const [popup, setPopup] = useState<boolean>(false);
+
   function getPercentage(minutes: number): number {
     return map(minutes / 60, rangeStart, rangeEnd, 0, 1) * 100;
   }
@@ -22,6 +26,8 @@ export default function TimeframeBar({
   return (
     <div
       onClick={handleClick}
+      onMouseEnter={() => setPopup(true)}
+      onMouseLeave={() => setPopup(false)}
       className="absolute h-3 bg-slate-800 rounded-full z-10 hover:bg-slate-500 cursor-pointer transition-colors"
       style={{
         left: getPercentage(timeframe.start) + "%",
@@ -29,6 +35,17 @@ export default function TimeframeBar({
           rangeStart * 60 + (timeframe.end - timeframe.start)
         )}%`,
       }}
-    ></div>
+    >
+      <Popup
+        visible={popup}
+        text={`${minutesToHoursAndMinutes(
+          timeframe.start,
+          ":"
+        )} - ${minutesToHoursAndMinutes(
+          timeframe.end,
+          ":"
+        )}, ${minutesToHoursAndMinutes(timeframe.end - timeframe.start)}`}
+      />
+    </div>
   );
 }
