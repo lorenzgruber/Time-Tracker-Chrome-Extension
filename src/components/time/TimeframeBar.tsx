@@ -20,7 +20,7 @@ export default function TimeframeBar({
   const [popup, setPopup] = useState<boolean>(false);
 
   function getPercentage(minutes: number): number {
-    return map(minutes / 60, rangeStart, rangeEnd, 0, 1) * 100;
+    return map(minutes, rangeStart, rangeEnd, 0, 1) * 100;
   }
 
   return (
@@ -32,7 +32,7 @@ export default function TimeframeBar({
       style={{
         left: getPercentage(timeframe.start) + "%",
         width: `${getPercentage(
-          rangeStart * 60 + (timeframe.end - timeframe.start)
+          rangeStart + (timeframe.end - timeframe.start)
         )}%`,
       }}
     >

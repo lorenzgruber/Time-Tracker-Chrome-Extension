@@ -1,48 +1,27 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { type } from "os";
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
-import { convertCompilerOptionsFromJson } from "typescript";
+import { ChangeEvent, useState } from "react";
+import { Timeframe } from "../../models/Timeframe";
 import BaseDialog from "./BaseDialog";
 import "./dialog.css";
 
 interface IProps {
   open: boolean;
   onClose: Function;
-  edit?: boolean;
-  start?: string;
-  end?: string;
-  id?: string;
+  rangeStart: number;
+  rangeEnd: number;
 }
 
-export interface ITimeframeDialogOptions {
-  start?: string;
-  end?: string;
-  edit?: boolean;
-  id?: string;
-}
-
-export interface ITimeframeDialogSubmitOptions {
-  start?: string;
-  end?: string;
-  delete?: boolean;
-  id?: string;
-}
-
-export default function TimeframeDialog({
+export default function CondigDialog({
   open,
   onClose,
-  edit,
-  start,
-  end,
-  id,
+  rangeStart,
+  rangeEnd,
 }: IProps) {
   const [formData, setFormDate] = useState<{
     startTime: string;
     endTime: string;
   }>({
-    startTime: start || "",
-    endTime: end || "",
+    startTime: (rangeStart / 60).toString(),
+    endTime: (rangeEnd / 60).toString(),
   });
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -58,41 +37,42 @@ export default function TimeframeDialog({
   }
 
   function submit() {
+    if (
+      Number.parseInt(formData.startTime) > 24 ||
+      Number.parseInt(formData.startTime) < 0 ||
+      Number.parseInt(formData.endTime) > 24 ||
+      Number.parseInt(formData.endTime) < 0
+    ) {
+      setErrorMessage("Please select valid Time!");
+      return;
+    }
     if (!formData.startTime || !formData.endTime) {
       setErrorMessage("Please fill out both fields!");
       return;
     }
-    if (formData.startTime >= formData.endTime) {
+    if (
+      Number.parseInt(formData.startTime) >= Number.parseInt(formData.endTime)
+    ) {
       setErrorMessage("Start must be bevore end!");
       return;
     }
-    onClose({ start: formData.startTime, end: formData.endTime, id });
+    onClose(
+      new Timeframe(
+        Number.parseInt(formData.startTime) * 60,
+        Number.parseInt(formData.endTime) * 60
+      )
+    );
   }
 
   function cancel() {
-    onClose({});
-  }
-
-  function remove() {
-    onClose({ delete: true, id });
+    onClose();
   }
 
   return (
     <BaseDialog open={open} onClose={onClose}>
-      <div className="flex flex-row">
-        <h3 className="font-bold uppercase tracking-wider text-lg">
-          {edit ? "Edit" : "Add"} Timeframe
-        </h3>
-        {edit && (
-          <button className="absolute right-3">
-            <FontAwesomeIcon
-              onClick={remove}
-              icon={faTrash}
-              className="text-slate-800 hover:scale-110 transition-transform"
-            />
-          </button>
-        )}
-      </div>
+      <h3 className="font-bold uppercase tracking-wider text-lg">
+        Timeline Config
+      </h3>
       <div className="grid grid-cols-2 gap-2 w-full">
         <label className="dialog-label" htmlFor="start">
           Start
@@ -102,15 +82,19 @@ export default function TimeframeDialog({
         </label>
         <input
           className="dialog-input-time"
-          type="time"
+          type="number"
           name="startTime"
+          min={0}
+          max={24}
           onChange={(event) => handleChange(event)}
           value={formData.startTime}
         />
         <input
           className="dialog-input-time"
-          type="time"
+          type="number"
           name="endTime"
+          min={0}
+          max={24}
           onChange={(event) => handleChange(event)}
           value={formData.endTime}
         />
@@ -118,7 +102,7 @@ export default function TimeframeDialog({
       <div className="text-xs text-red-400 font-bold h-4">{errorMessage}</div>
       <div className="grid grid-cols-2 gap-2 w-full">
         <button className="dialog-button" onClick={submit}>
-          {edit ? "Edit" : "Add"}
+          Save
         </button>
         <button className="dialog-button cancel" onClick={cancel}>
           Cancel

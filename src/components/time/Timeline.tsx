@@ -7,7 +7,7 @@ interface IProps {
 
 export default function Timeline({ rangeStart, rangeEnd }: IProps) {
   let hourIndicatorElements = [];
-  for (let i = rangeStart + 1; i <= rangeEnd - 1; i++) {
+  for (let i = rangeStart / 60 + 1; i <= rangeEnd / 60 - 1; i++) {
     hourIndicatorElements.push(
       <div
         key={i}
@@ -16,7 +16,7 @@ export default function Timeline({ rangeStart, rangeEnd }: IProps) {
         className="absolute w-px h-2 bg-slate-300 bottom-0
         before:content-[attr(before)] before:text-slate-800 before:absolute before:top-3 before:left-1/2 before:-translate-x-1/2"
         style={{
-          left: `${getPercentage(i)}%`,
+          left: `${getPercentage(i * 60)}%`,
           fontSize: "10px",
           lineHeight: "8px",
         }}
@@ -24,8 +24,8 @@ export default function Timeline({ rangeStart, rangeEnd }: IProps) {
     );
   }
 
-  function getPercentage(hour: number): number {
-    return map(hour, rangeStart, rangeEnd, 0, 1) * 100;
+  function getPercentage(minutes: number): number {
+    return map(minutes, rangeStart, rangeEnd, 0, 1) * 100;
   }
 
   return (

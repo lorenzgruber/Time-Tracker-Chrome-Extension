@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "./components/Header";
 import { Day, IDay } from "./models/Day";
-import { Timeframe } from "./models/Timeframe";
+import { ITimeframe, Timeframe } from "./models/Timeframe";
 import DayPage from "./pages/DayPage";
 import WeekPage from "./pages/WeekPage";
 import {
@@ -22,6 +22,9 @@ export default function App() {
   const [isToday, setIsToday] = useState<boolean>(true);
   const [displayDay, setDisplayDay] = useState<boolean>(true);
   const [tracking, setTracking] = useState<boolean>(false);
+  const [range, setRange] = useState<ITimeframe>(
+    new Timeframe(6 * 60, 19 * 60)
+  );
   // const [tracking, setTracking] = useState<boolean>(
   //   JSON.parse(localStorage.getItem("tracking") || "null") || false
   // );
@@ -85,9 +88,18 @@ export default function App() {
     setCurrentDay(day);
   }
 
+  function updateRange(range: ITimeframe) {
+    setRange(range);
+  }
+
   return (
     <>
-      <Header displayDay={displayDay} handleClick={toggleDisplayName} />
+      <Header
+        displayDay={displayDay}
+        handleClick={toggleDisplayName}
+        range={range}
+        updateRange={updateRange}
+      />
       <main className="mt-3">
         {displayDay ? (
           <DayPage
@@ -97,6 +109,7 @@ export default function App() {
             tracking={tracking}
             toggleTracking={toggleTracking}
             updateTimeframes={updateTimeframes}
+            range={range}
           />
         ) : (
           <WeekPage />

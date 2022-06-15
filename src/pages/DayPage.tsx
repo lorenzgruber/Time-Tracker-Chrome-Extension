@@ -21,7 +21,7 @@ import TimeframeDialog, {
   ITimeframeDialogOptions,
   ITimeframeDialogSubmitOptions,
 } from "../components/dialog/TimeframeDialog";
-import { Timeframe } from "../models/Timeframe";
+import { ITimeframe, Timeframe } from "../models/Timeframe";
 
 interface IProps {
   day: IDay;
@@ -30,6 +30,7 @@ interface IProps {
   tracking: boolean;
   toggleTracking: Function;
   updateTimeframes: Function;
+  range: ITimeframe;
 }
 
 export default function DayPage({
@@ -39,8 +40,8 @@ export default function DayPage({
   tracking,
   toggleTracking,
   updateTimeframes,
+  range,
 }: IProps) {
-  const [range, setRange] = useState({ start: 6, end: 19 });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogOptions, setDialogOptions] = useState<ITimeframeDialogOptions>(
     {}
@@ -70,19 +71,19 @@ export default function DayPage({
     setDialogOpen(true);
   }
 
-  function submitDialog(options: ITimeframeDialogSubmitOptions) {
+  function submitDialog(options?: ITimeframeDialogSubmitOptions) {
     setDialogOpen(false);
 
-    let newDay: any;
+    let newDay: IDay;
 
-    if (options.delete) {
+    if (options?.delete) {
       newDay = {
         ...day,
         timeframes:
           day?.timeframes.filter((timeframe) => timeframe.id !== options.id) ||
           [],
       };
-    } else if (options.start && options.end) {
+    } else if (options?.start && options.end) {
       if (options.id) {
         newDay = {
           ...day,
@@ -109,7 +110,7 @@ export default function DayPage({
       }
     }
 
-    if (newDay) {
+    if (newDay!) {
       updateTimeframes(newDay);
     }
   }
