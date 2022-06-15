@@ -16,8 +16,7 @@ export default function TimeIndicator({ rangeStart, rangeEnd }: IProps) {
 
   function getProgress(): number {
     const now = new Date();
-    //return (now.getHours() * 60 + now.getMinutes()) / 60;
-    return 12.5;
+    return (now.getHours() * 60 + now.getMinutes()) / 60;
   }
 
   function calculatePosition(): number {
