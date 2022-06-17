@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "./components/Header";
 import { Day, IDay } from "./models/Day";
 import { ITimeframe, Timeframe } from "./models/Timeframe";
@@ -21,14 +21,17 @@ export default function App() {
   const [currentDay, setCurrentDay] = useState<IDay>(getCurrentDay());
   const [isToday, setIsToday] = useState<boolean>(true);
   const [displayDay, setDisplayDay] = useState<boolean>(true);
-  const [tracking, setTracking] = useState<boolean>(false);
-  const [trackingId, setTrackingId] = useState<string | undefined>();
+  const [tracking, setTracking] = useState<boolean>(
+    JSON.parse(localStorage.getItem("tracking") || "null") || false
+  );
+  const [trackingId, setTrackingId] = useState<string | undefined>(
+    localStorage.getItem("trackingId") || undefined
+  );
   const [range, setRange] = useState<ITimeframe>(
     new Timeframe(6 * 60, 19 * 60)
   );
-  // const [tracking, setTracking] = useState<boolean>(
-  //   JSON.parse(localStorage.getItem("tracking") || "null") || false
-  // );
+
+  const firstUpdate = useRef(true);
 
   useEffect(() => {
     localStorage.setItem("tracking", JSON.stringify(tracking));
@@ -59,7 +62,9 @@ export default function App() {
   }, [days]);
 
   useEffect(() => {
-    if (tracking) {
+    console.log(tracking, trackingId);
+
+    if (tracking && !trackingId) {
       const newTimeframe = new Timeframe();
       newTimeframe.tracking = true;
       setCurrentDay((prevCurrentDay) => ({
@@ -67,7 +72,7 @@ export default function App() {
         timeframes: [...prevCurrentDay.timeframes, newTimeframe],
       }));
       setTrackingId(newTimeframe.id);
-    } else {
+    } else if (!firstUpdate.current) {
       setTrackingId(undefined);
       setCurrentDay((prevCurrentDay) => {
         const timeframes = prevCurrentDay.timeframes.map((timeframe) => {
@@ -86,12 +91,17 @@ export default function App() {
           timeframes,
         };
       });
+    } else {
+      firstUpdate.current = false;
     }
+
+    localStorage.setItem("tracking", JSON.stringify(tracking));
   }, [tracking]);
 
   useEffect(() => {
     let interval: NodeJS.Timer;
     if (trackingId) {
+      console.log(trackingId);
       interval = setInterval(() => {
         setCurrentDay((prevCurrentDay) => {
           const timeframes = prevCurrentDay.timeframes.map((timeframe) => {
@@ -113,6 +123,8 @@ export default function App() {
         });
       }, 1000);
     }
+
+    localStorage.setItem("trackingId", trackingId || "");
 
     return () => {
       if (interval) clearInterval(interval);
