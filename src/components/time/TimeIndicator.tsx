@@ -10,7 +10,7 @@ export default function TimeIndicator({ rangeStart, rangeEnd }: IProps) {
   const [progress, setProgress] = useState<number>(getProgress());
 
   useEffect(() => {
-    const interval = setInterval(() => setProgress(getProgress()), 60 * 1000);
+    const interval = setInterval(() => setProgress(getProgress()), 1000);
     return () => clearInterval(interval);
   }, []);
 

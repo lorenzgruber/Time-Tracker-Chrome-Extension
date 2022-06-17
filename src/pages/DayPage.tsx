@@ -88,12 +88,15 @@ export default function DayPage({
         newDay = {
           ...day,
           timeframes: day.timeframes.map((timeframe) => {
-            return timeframe.id === options.id
-              ? new Timeframe(
-                  hoursAndMinutesToMinutes(options.start || "", ":"),
-                  hoursAndMinutesToMinutes(options.end || "", ":")
-                )
-              : timeframe;
+            if (timeframe.id === options.id) {
+              const newTimeframe = new Timeframe(
+                hoursAndMinutesToMinutes(options.start || "", ":"),
+                hoursAndMinutesToMinutes(options.end || "", ":"),
+                options.id
+              );
+              return newTimeframe;
+            }
+            return timeframe;
           }),
         };
       } else {

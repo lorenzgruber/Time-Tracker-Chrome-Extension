@@ -22,6 +22,7 @@ export default function App() {
   const [isToday, setIsToday] = useState<boolean>(true);
   const [displayDay, setDisplayDay] = useState<boolean>(true);
   const [tracking, setTracking] = useState<boolean>(false);
+  const [trackingId, setTrackingId] = useState<string | undefined>();
   const [range, setRange] = useState<ITimeframe>(
     new Timeframe(6 * 60, 19 * 60)
   );
@@ -56,6 +57,49 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("days", JSON.stringify(days));
   }, [days]);
+
+  useEffect(() => {
+    if (tracking) {
+      const newTimeframe = new Timeframe();
+      setCurrentDay((prevCurrentDay) => ({
+        ...prevCurrentDay,
+        timeframes: [...prevCurrentDay.timeframes, newTimeframe],
+      }));
+
+      setTrackingId(newTimeframe.id);
+    } else {
+      setTrackingId(undefined);
+    }
+  }, [tracking]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timer;
+    if (trackingId) {
+      interval = setInterval(() => {
+        setCurrentDay((prevCurrentDay) => {
+          const timeframes = prevCurrentDay.timeframes.map((timeframe) => {
+            if (timeframe.id === trackingId) {
+              const newTimeframe = new Timeframe(
+                timeframe.start,
+                undefined,
+                timeframe.id
+              );
+              return newTimeframe;
+            }
+            return timeframe;
+          });
+          return {
+            ...prevCurrentDay,
+            timeframes,
+          };
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [trackingId]);
 
   function getCurrentDay(): IDay {
     const date = new Date();
