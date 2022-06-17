@@ -28,12 +28,17 @@ export default function TimeframeBar({
       onClick={handleClick}
       onMouseEnter={() => setPopup(true)}
       onMouseLeave={() => setPopup(false)}
-      className="absolute h-3 bg-slate-800 rounded-full z-10 hover:bg-slate-500 cursor-pointer transition-colors min-w-[1px]"
+      className={
+        "absolute h-3 bg-slate-800 z-10 hover:bg-slate-500 cursor-pointer transition-colors min-w-[1px]"
+      }
       style={{
         left: getPercentage(timeframe.start) + "%",
         width: `${getPercentage(
           rangeStart + (timeframe.end - timeframe.start)
         )}%`,
+        borderRadius: `10px ${
+          timeframe.tracking ? "5px 5px" : "10px 10px"
+        } 10px`,
       }}
     >
       <Popup

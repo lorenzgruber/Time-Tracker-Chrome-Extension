@@ -92,7 +92,8 @@ export default function DayPage({
               const newTimeframe = new Timeframe(
                 hoursAndMinutesToMinutes(options.start || "", ":"),
                 hoursAndMinutesToMinutes(options.end || "", ":"),
-                options.id
+                timeframe.id,
+                timeframe.tracking
               );
               return newTimeframe;
             }

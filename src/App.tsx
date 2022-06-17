@@ -61,14 +61,31 @@ export default function App() {
   useEffect(() => {
     if (tracking) {
       const newTimeframe = new Timeframe();
+      newTimeframe.tracking = true;
       setCurrentDay((prevCurrentDay) => ({
         ...prevCurrentDay,
         timeframes: [...prevCurrentDay.timeframes, newTimeframe],
       }));
-
       setTrackingId(newTimeframe.id);
     } else {
       setTrackingId(undefined);
+      setCurrentDay((prevCurrentDay) => {
+        const timeframes = prevCurrentDay.timeframes.map((timeframe) => {
+          if (timeframe.id === trackingId) {
+            const newTimeframe = new Timeframe(
+              timeframe.start,
+              timeframe.end,
+              timeframe.id
+            );
+            return newTimeframe;
+          }
+          return timeframe;
+        });
+        return {
+          ...prevCurrentDay,
+          timeframes,
+        };
+      });
     }
   }, [tracking]);
 
@@ -82,7 +99,8 @@ export default function App() {
               const newTimeframe = new Timeframe(
                 timeframe.start,
                 undefined,
-                timeframe.id
+                timeframe.id,
+                timeframe.tracking
               );
               return newTimeframe;
             }
