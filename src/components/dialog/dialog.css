@@ -13,3 +13,7 @@
 .dialog-label {
   @apply -mb-2 uppercase text-sm;
 }
+
+.dialog-copy-message {
+  @apply text-xs text-slate-400 -mt-2 hover:text-slate-600;
+}

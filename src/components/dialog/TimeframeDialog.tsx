@@ -77,6 +77,10 @@ export default function TimeframeDialog({
     onClose({ delete: true, id });
   }
 
+  function copyToClipBoard(value: string): void {
+    if (value) navigator.clipboard.writeText(value);
+  }
+
   return (
     <BaseDialog open={open} onClose={onClose}>
       <div className="flex flex-row">
@@ -114,6 +118,22 @@ export default function TimeframeDialog({
           onChange={(event) => handleChange(event)}
           value={formData.endTime}
         />
+        <span
+          className={`dialog-copy-message${
+            formData.startTime ? " cursor-pointer" : ""
+          }`}
+          onClick={() => copyToClipBoard(formData.startTime)}
+        >
+          {formData.startTime && "Copy to clipboard"}
+        </span>
+        <span
+          className={`dialog-copy-message${
+            formData.endTime ? " cursor-pointer" : ""
+          }`}
+          onClick={() => copyToClipBoard(formData.endTime)}
+        >
+          {formData.endTime && "Copy to clipboard"}
+        </span>
       </div>
       <div className="text-xs text-red-400 font-bold h-4">{errorMessage}</div>
       <div className="grid grid-cols-2 gap-2 w-full">
