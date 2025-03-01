@@ -1,5 +1,7 @@
 # Time-Tracker Extension for Google Chrome
 
+![Screenshot](./img/screenshot.png)
+
 ## Installation
 
 1. After cloning the repository, run the build command:
